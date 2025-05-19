@@ -31,3 +31,6 @@ tile_set = SubResource("TileSet_hrmi8")
 
 [node name="TileNumbers" type="Node2D" parent="."]
 unique_name_in_owner = true
+
+[node name="Structures" type="Node2D" parent="."]
+unique_name_in_owner = true

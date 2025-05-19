@@ -1,0 +1,14 @@
+[gd_scene load_steps=3 format=3 uid="uid://lpkpuesi0aqf"]
+
+[ext_resource type="Script" uid="uid://cgbhq23ug1b5v" path="res://scripts/structure.gd" id="1_8t6i7"]
+[ext_resource type="Texture2D" uid="uid://c6mcn1ayfiwh8" path="res://assets/structures.png" id="1_cjacc"]
+
+[node name="Structure" type="Node2D"]
+script = ExtResource("1_8t6i7")
+
+[node name="Sprite2D" type="Sprite2D" parent="."]
+unique_name_in_owner = true
+y_sort_enabled = true
+texture = ExtResource("1_cjacc")
+region_enabled = true
+region_rect = Rect2(0, 0, 64, 64)
