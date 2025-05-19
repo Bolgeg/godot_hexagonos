@@ -1,0 +1,10 @@
+[gd_scene load_steps=3 format=3 uid="uid://be61xbsfj8swf"]
+
+[ext_resource type="PackedScene" uid="uid://hh71tmrjwd4h" path="res://scenes/map.tscn" id="1_uwrxv"]
+[ext_resource type="Script" uid="uid://bmprpaalyu8wt" path="res://scripts/game.gd" id="1_yqjtg"]
+
+[node name="Game" type="Node2D"]
+script = ExtResource("1_yqjtg")
+
+[node name="Map" parent="." instance=ExtResource("1_uwrxv")]
+unique_name_in_owner = true

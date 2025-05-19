@@ -1,0 +1,33 @@
+[gd_scene load_steps=5 format=4 uid="uid://hh71tmrjwd4h"]
+
+[ext_resource type="Texture2D" uid="uid://d0wbics1oh4s1" path="res://assets/terrain.png" id="1_4xfga"]
+[ext_resource type="Script" uid="uid://6521r03amq3e" path="res://scripts/map.gd" id="1_paxxb"]
+
+[sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_paxxb"]
+texture = ExtResource("1_4xfga")
+texture_region_size = Vector2i(64, 64)
+0:0/0 = 0
+1:0/0 = 0
+2:0/0 = 0
+3:0/0 = 0
+4:0/0 = 0
+5:0/0 = 0
+6:0/0 = 0
+7:0/0 = 0
+
+[sub_resource type="TileSet" id="TileSet_hrmi8"]
+tile_shape = 3
+tile_layout = 2
+tile_size = Vector2i(64, 64)
+sources/0 = SubResource("TileSetAtlasSource_paxxb")
+
+[node name="Map" type="Node2D"]
+script = ExtResource("1_paxxb")
+
+[node name="TileMapLayer" type="TileMapLayer" parent="."]
+unique_name_in_owner = true
+tile_map_data = PackedByteArray("AAAAAAIAAAACAAAAAAABAAEAAAACAAAAAAADAAAAAAACAAAAAAAEAAAAAAACAAAAAAAEAAEAAAACAAAAAAAEAAIAAAACAAAAAAADAAMAAAACAAAAAAACAAQAAAACAAAAAAABAAQAAAACAAAAAAAAAAQAAAACAAAAAAAAAAMAAAACAAAAAAABAAMAAAACAAAAAAACAAMAAAACAAAAAAADAAIAAAACAAAAAAACAAIAAAACAAAAAAADAAEAAAACAAAAAAACAAEAAAACAAAAAAABAAIAAAACAAAAAAACAAAAAAACAAAAAAA=")
+tile_set = SubResource("TileSet_hrmi8")
+
+[node name="TileNumbers" type="Node2D" parent="."]
+unique_name_in_owner = true
