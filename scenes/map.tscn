@@ -1,7 +1,8 @@
-[gd_scene load_steps=5 format=4 uid="uid://hh71tmrjwd4h"]
+[gd_scene load_steps=6 format=3 uid="uid://hh71tmrjwd4h"]
 
 [ext_resource type="Texture2D" uid="uid://d0wbics1oh4s1" path="res://assets/terrain.png" id="1_4xfga"]
 [ext_resource type="Script" uid="uid://6521r03amq3e" path="res://scripts/map.gd" id="1_paxxb"]
+[ext_resource type="PackedScene" uid="uid://y1v3shqnmoo0" path="res://scenes/map_selection_cursor.tscn" id="3_gldc4"]
 
 [sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_paxxb"]
 texture = ExtResource("1_4xfga")
@@ -26,11 +27,13 @@ script = ExtResource("1_paxxb")
 
 [node name="TileMapLayer" type="TileMapLayer" parent="."]
 unique_name_in_owner = true
-tile_map_data = PackedByteArray("AAAAAAIAAAACAAAAAAABAAEAAAACAAAAAAADAAAAAAACAAAAAAAEAAAAAAACAAAAAAAEAAEAAAACAAAAAAAEAAIAAAACAAAAAAADAAMAAAACAAAAAAACAAQAAAACAAAAAAABAAQAAAACAAAAAAAAAAQAAAACAAAAAAAAAAMAAAACAAAAAAABAAMAAAACAAAAAAACAAMAAAACAAAAAAADAAIAAAACAAAAAAACAAIAAAACAAAAAAADAAEAAAACAAAAAAACAAEAAAACAAAAAAABAAIAAAACAAAAAAACAAAAAAACAAAAAAA=")
 tile_set = SubResource("TileSet_hrmi8")
 
 [node name="TileNumbers" type="Node2D" parent="."]
 unique_name_in_owner = true
 
 [node name="Structures" type="Node2D" parent="."]
+unique_name_in_owner = true
+
+[node name="MapSelectionCursor" parent="." instance=ExtResource("3_gldc4")]
 unique_name_in_owner = true

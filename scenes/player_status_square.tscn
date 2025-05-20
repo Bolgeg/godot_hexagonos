@@ -1,0 +1,43 @@
+[gd_scene load_steps=3 format=3 uid="uid://cq7k8q310n3a0"]
+
+[ext_resource type="Script" uid="uid://tfoqp0lfucuw" path="res://scripts/player_status_square.gd" id="1_oe1kv"]
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_ajfc4"]
+resource_local_to_scene = true
+bg_color = Color(0.501961, 0.501961, 0.501961, 1)
+corner_radius_top_left = 8
+corner_radius_top_right = 8
+corner_radius_bottom_right = 8
+corner_radius_bottom_left = 8
+
+[node name="PlayerStatusSquare" type="Control"]
+custom_minimum_size = Vector2(64, 64)
+layout_mode = 3
+anchor_right = 0.05
+anchor_bottom = 0.089
+offset_right = -64.0
+offset_bottom = -64.08
+script = ExtResource("1_oe1kv")
+
+[node name="Panel" type="Panel" parent="."]
+unique_name_in_owner = true
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_styles/panel = SubResource("StyleBoxFlat_ajfc4")
+
+[node name="ColorRect" type="ColorRect" parent="."]
+unique_name_in_owner = true
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 8.0
+offset_top = 8.0
+offset_right = -8.0
+offset_bottom = -8.0
+grow_horizontal = 2
+grow_vertical = 2

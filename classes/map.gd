@@ -6,17 +6,44 @@ const RESOURCE_TYPES:=5
 var radius:=2
 
 var cell_coordinates:=[]
+var corner_coordinates:=[]
+var side_coordinates:=[]
 
 var cells:=[]
+var corner_structures:=[]
+var side_structures:=[]
 
 func _init(radius_to_set:int=2) -> void:
 	radius=radius_to_set
-	for y in range(radius*2+1):
-		cells.append([])
-		for x in range(radius*2+1):
-			cells[y].append(MapCell.new())
-			if x+y>=radius and x+y<=radius*2*2-radius:
+	
+	for y in range(radius*2+3):
+		for x in range(radius*2+3):
+			if x-1+y-1>=radius and x-1+y-1<=radius*2*2-radius and x-1>=0 and y-1>=0 and x-1<=radius*2 and y-1<=radius*2:
 				cell_coordinates.append(Vector2i(x,y))
+				for i in range(6):
+					var c:=get_corner_unique_coordinates(Vector3i(x,y,i))
+					if not c in corner_coordinates:
+						corner_coordinates.append(c)
+					var s:=get_side_unique_coordinates(Vector3i(x,y,i))
+					if not s in side_coordinates:
+						side_coordinates.append(s)
+	
+	for i in corner_coordinates.size():
+		corner_structures.append(Structure.new())
+	for i in side_coordinates.size():
+		side_structures.append(Structure.new())
+	
+	for y in range(radius*2+3):
+		cells.append([])
+		for x in range(radius*2+3):
+			cells[y].append(MapCell.new())
+			for i in range(6):
+				var c:=get_corner_unique_coordinates(Vector3i(x,y,i))
+				if c in corner_coordinates:
+					cells[y][x].corner_structures[i]=corner_coordinates.find(c)
+				var s:=get_side_unique_coordinates(Vector3i(x,y,i))
+				if s in side_coordinates:
+					cells[y][x].side_structures[i]=side_coordinates.find(s)
 
 func initialize_randomly():
 	var resources:=[]
@@ -31,4 +58,163 @@ func initialize_randomly():
 	numbers.shuffle()
 	
 	for i in cell_coordinates.size():
-		cells[cell_coordinates[i].y][cell_coordinates[i].x]=MapCell.new(resources[i],numbers[i])
+		cells[cell_coordinates[i].y][cell_coordinates[i].x].resource=resources[i]
+		cells[cell_coordinates[i].y][cell_coordinates[i].x].number=numbers[i]
+
+func get_corner_unique_coordinates(corner:Vector3i)->Vector3i:
+	var c:=corner
+	match c.z:
+		2:
+			c=Vector3i(c.x,c.y+1,0)
+		3:
+			c=Vector3i(c.x-1,c.y+1,1)
+		4:
+			c=Vector3i(c.x-1,c.y+1,0)
+		5:
+			c=Vector3i(c.x-1,c.y,1)
+	return c
+
+func get_side_unique_coordinates(side:Vector3i)->Vector3i:
+	var s:=side
+	match s.z:
+		3:
+			s=Vector3i(s.x-1,s.y+1,0)
+		4:
+			s=Vector3i(s.x-1,s.y,1)
+		5:
+			s=Vector3i(s.x,s.y-1,2)
+	return s
+
+func cell_exists(coordinates:Vector2i)->bool:
+	return coordinates in cell_coordinates
+
+func corner_exists(corner:Vector3i)->bool:
+	return corner in corner_coordinates
+
+func side_exists(side:Vector3i)->bool:
+	return side in side_coordinates
+
+func get_corner_adjacent_corners(corner:Vector3i)->Array:
+	corner=get_corner_unique_coordinates(corner)
+	var corners:=[]
+	for i in range(3):
+		var c:=corner
+		if c.z==0:
+			match i:
+				0:
+					c=Vector3i(c.x,c.y-1,1)
+				1:
+					c=Vector3i(c.x,c.y,1)
+				2:
+					c=Vector3i(c.x-1,c.y,1)
+		else:
+			match i:
+				0:
+					c=Vector3i(c.x+1,c.y,0)
+				1:
+					c=Vector3i(c.x,c.y+1,0)
+				2:
+					c=Vector3i(c.x,c.y,0)
+		if corner_exists(c):
+			corners.append(c)
+	return corners
+
+func get_side_adjacent_sides(side:Vector3i)->Array:
+	side=get_side_unique_coordinates(side)
+	var sides:=[]
+	for i in range(4):
+		var s:=side
+		if s.z==0:
+			match i:
+				0:
+					s=Vector3i(s.x,s.y-1,1)
+				1:
+					s=Vector3i(s.x+1,s.y-1,2)
+				2:
+					s=Vector3i(s.x,s.y,1)
+				3:
+					s=Vector3i(s.x,s.y-1,2)
+		elif s.z==1:
+			match i:
+				0:
+					s=Vector3i(s.x+1,s.y-1,2)
+				1:
+					s=Vector3i(s.x,s.y+1,0)
+				2:
+					s=Vector3i(s.x,s.y,2)
+				3:
+					s=Vector3i(s.x,s.y,0)
+		else:
+			match i:
+				0:
+					s=Vector3i(s.x,s.y,1)
+				1:
+					s=Vector3i(s.x,s.y+1,0)
+				2:
+					s=Vector3i(s.x-1,s.y+1,1)
+				3:
+					s=Vector3i(s.x-1,s.y+1,0)
+		if side_exists(s):
+			sides.append(s)
+	return sides
+
+func get_side_adjacent_corners(side:Vector3i)->Array:
+	side=get_side_unique_coordinates(side)
+	match side.z:
+		0:
+			return [
+				Vector3i(side.x,side.y,0),
+				Vector3i(side.x,side.y,1),
+			]
+		1:
+			return [
+				Vector3i(side.x,side.y,1),
+				Vector3i(side.x,side.y+1,0),
+			]
+		2:
+			return [
+				Vector3i(side.x,side.y+1,0),
+				Vector3i(side.x-1,side.y+1,1),
+			]
+		_:
+			return []
+
+func can_put_village_game_start(coordinates:Vector3i,_color:int)->bool:
+	coordinates=get_corner_unique_coordinates(coordinates)
+	if corner_structures[corner_coordinates.find(coordinates)].exists:
+		return false
+	for c in get_corner_adjacent_corners(coordinates):
+		if corner_structures[corner_coordinates.find(c)].exists:
+			return false
+	return true
+
+func put_village_game_start(coordinates:Vector3i,color:int)->bool:
+	if not can_put_village_game_start(coordinates,color):
+		return false
+	coordinates=get_corner_unique_coordinates(coordinates)
+	corner_structures[corner_coordinates.find(coordinates)]=Structure.new(true,Structure.Type.VILLAGE,color)
+	return true
+
+func put_village(coordinates:Vector3i,color:int)->bool:
+	return false
+
+func can_put_road(coordinates:Vector3i,color:int)->bool:
+	coordinates=get_side_unique_coordinates(coordinates)
+	if side_structures[side_coordinates.find(coordinates)].exists:
+		return false
+	for c in get_side_adjacent_sides(coordinates):
+		var structure:Structure=side_structures[side_coordinates.find(c)]
+		if structure.exists and structure.color==color:
+			return true
+	for c in get_side_adjacent_corners(coordinates):
+		var structure:Structure=corner_structures[corner_coordinates.find(c)]
+		if structure.exists and structure.color==color:
+			return true
+	return false
+
+func put_road(coordinates:Vector3i,color:int)->bool:
+	if not can_put_road(coordinates,color):
+		return false
+	coordinates=get_side_unique_coordinates(coordinates)
+	side_structures[side_coordinates.find(coordinates)]=Structure.new(true,Structure.Type.ROAD,color)
+	return true
