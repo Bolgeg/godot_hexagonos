@@ -179,6 +179,88 @@ func get_side_adjacent_corners(side:Vector3i)->Array:
 		_:
 			return []
 
+func get_corner_adjacent_cells(coordinates:Vector3i)->Array:
+	var corner=get_corner_unique_coordinates(coordinates)
+	var c:=[]
+	for i in range(3):
+		var cell:=Vector2i(corner.x,corner.y)
+		if corner.z==0:
+			match i:
+				0:
+					cell=Vector2i(cell.x+1,cell.y-1)
+				1:
+					cell=Vector2i(cell.x,cell.y)
+				2:
+					cell=Vector2i(cell.x,cell.y-1)
+		else:
+			match i:
+				0:
+					cell=Vector2i(cell.x+1,cell.y-1)
+				1:
+					cell=Vector2i(cell.x+1,cell.y)
+				2:
+					cell=Vector2i(cell.x,cell.y)
+		if cell_exists(cell):
+			c.append(cell)
+	return c
+
+func get_corner_adjacent_cell_resources(coordinates:Vector3i)->Array:
+	var c:=get_corner_adjacent_cells(coordinates)
+	var r:=[]
+	for cell in c:
+		r.append(cells[cell.y][cell.x].resource)
+	return r
+
+func are_adjacent_corners_free(coordinates:Vector3i)->bool:
+	for c in get_corner_adjacent_corners(coordinates):
+		if corner_structures[corner_coordinates.find(c)].exists:
+			return false
+	return true
+
+func get_number_probability(number:int)->float:
+	if number<2 or number>12:
+		return 0.0
+	return float(6-abs(number-7))/36
+
+func get_village_position_score(coordinates:Vector3i)->float:
+	var score:=0.0
+	var c:=get_corner_adjacent_cells(coordinates)
+	for cell in c:
+		score+=get_number_probability(cells[cell.y][cell.x].number)
+	return score
+
+func get_road_position_score(coordinates:Vector3i,color:int)->float:
+	var score:=0.0
+	if not can_put_road(coordinates,color):
+		return 0.0
+	
+	var village_corner:=-1
+	var corners:=get_side_adjacent_corners(coordinates)
+	for i in corners.size():
+		var structure:Structure=corner_structures[corner_coordinates.find(corners[i])]
+		if structure.exists and structure.color==color:
+			village_corner=i
+			break
+	
+	if village_corner!=-1:
+		var other_corner=corners[(village_corner+1)%2]
+		var target_corners:=get_corner_adjacent_corners(other_corner)
+		for c in target_corners:
+			if c==corners[village_corner]:
+				continue
+			if corner_structures[corner_coordinates.find(c)].exists:
+				continue
+			if are_adjacent_corners_free(c):
+				score+=get_village_position_score(c)
+	else:
+		for c in corners:
+			if corner_structures[corner_coordinates.find(c)].exists:
+				continue
+			if are_adjacent_corners_free(c):
+				score+=get_village_position_score(c)*2
+	
+	return score
+
 func can_put_village_game_start(coordinates:Vector3i,_color:int)->bool:
 	coordinates=get_corner_unique_coordinates(coordinates)
 	if corner_structures[corner_coordinates.find(coordinates)].exists:

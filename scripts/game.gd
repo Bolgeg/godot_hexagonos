@@ -9,9 +9,12 @@ enum GameStage{PUT_FIRST_VILLAGE,PUT_SECOND_VILLAGE,MAIN_STAGE}
 var game_stage:=GameStage.PUT_FIRST_VILLAGE
 var game_stage_turn_count:=0
 
+enum ResourceType{WOOD=0,CLAY=1,SHEEP=2,STONE=3,WHEAT=4}
+
 var map:=Map.new()
 
 var player_colors:=[0,1,2,3]
+var players:=[Player.new(),Player.new(),Player.new(),Player.new()]
 var active_player:=0
 var ai_waiting:=false
 var turn_start:=true
@@ -64,6 +67,8 @@ func _input(_event: InputEvent) -> void:
 		if player_state==PlayerState.PUT_VILLAGE:
 			if game_stage==GameStage.PUT_FIRST_VILLAGE or game_stage==GameStage.PUT_SECOND_VILLAGE:
 				if map.put_village_game_start(map_node.selection_coordinates,player_colors[0]):
+					if game_stage==GameStage.PUT_SECOND_VILLAGE:
+						add_initial_resources_to_player(active_player,map_node.selection_coordinates)
 					return_to_action_selection()
 			else:
 				if map.put_village(map_node.selection_coordinates,player_colors[0]):
@@ -105,5 +110,35 @@ func next_turn():
 		active_player=(active_player+1)%4
 	turn_start=true
 
+func add_initial_resources_to_player(player:int,village_coordinates:Vector3i):
+	var resources:=map.get_corner_adjacent_cell_resources(village_coordinates)
+	for r in resources:
+		players[player].resources[r]+=1
+
 func execute_ai_turn():
-	pass
+	if game_stage==GameStage.PUT_FIRST_VILLAGE or game_stage==GameStage.PUT_SECOND_VILLAGE:
+		var positions:=[]
+		for c in map.corner_coordinates:
+			positions.append([c,map.get_village_position_score(c)])
+		positions.sort_custom(func(a,b):return a[1]>b[1])
+		
+		var village_coordinates:=Vector3i(0,0,0)
+		for p in positions:
+			village_coordinates=p[0]
+			if map.put_village_game_start(village_coordinates,player_colors[active_player]):
+				break
+		if game_stage==GameStage.PUT_SECOND_VILLAGE:
+			add_initial_resources_to_player(active_player,village_coordinates)
+		
+		var road_positions:=[]
+		for c in map.side_coordinates:
+			road_positions.append([c,map.get_road_position_score(c,player_colors[active_player])])
+		road_positions.sort_custom(func(a,b):return a[1]>b[1])
+		
+		var road_coordinates:=Vector3i(0,0,0)
+		for p in road_positions:
+			road_coordinates=p[0]
+			if map.put_road(road_coordinates,player_colors[active_player]):
+				break
+	else:
+		pass
