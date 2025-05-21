@@ -1,0 +1,60 @@
+[gd_scene load_steps=6 format=3 uid="uid://bndfna3bxudus"]
+
+[ext_resource type="Texture2D" uid="uid://cvxo3j64x0o11" path="res://assets/resources.png" id="1_ih0p2"]
+[ext_resource type="Script" uid="uid://0qw2dv1m32s6" path="res://scripts/resource_counter.gd" id="1_md2us"]
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_b04ly"]
+resource_local_to_scene = true
+bg_color = Color(0.501961, 0.501961, 0.501961, 1)
+corner_radius_top_left = 8
+corner_radius_top_right = 8
+corner_radius_bottom_right = 8
+corner_radius_bottom_left = 8
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_md2us"]
+resource_local_to_scene = true
+atlas = ExtResource("1_ih0p2")
+region = Rect2(0, 0, 64, 64)
+
+[sub_resource type="LabelSettings" id="LabelSettings_ih0p2"]
+resource_local_to_scene = true
+font_size = 32
+outline_size = 12
+outline_color = Color(0, 0, 0, 1)
+
+[node name="ResourceCounter" type="Control"]
+custom_minimum_size = Vector2(64, 64)
+layout_mode = 3
+anchor_right = 0.05
+anchor_bottom = 0.089
+offset_right = -64.0
+offset_bottom = -64.08
+script = ExtResource("1_md2us")
+
+[node name="Panel" type="Panel" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_styles/panel = SubResource("StyleBoxFlat_b04ly")
+
+[node name="TextureRect" type="TextureRect" parent="."]
+unique_name_in_owner = true
+layout_mode = 1
+offset_right = 40.0
+offset_bottom = 40.0
+texture = SubResource("AtlasTexture_md2us")
+
+[node name="Label" type="Label" parent="."]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(64, 64)
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+text = "0"
+label_settings = SubResource("LabelSettings_ih0p2")
+horizontal_alignment = 2
+vertical_alignment = 2

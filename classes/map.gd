@@ -52,7 +52,7 @@ func initialize_randomly():
 	
 	var numbers:=[]
 	for i in cell_coordinates.size():
-		numbers.append(i%10+2)
+		numbers.append(i%11+2)
 	
 	resources.shuffle()
 	numbers.shuffle()
@@ -204,6 +204,31 @@ func get_corner_adjacent_cells(coordinates:Vector3i)->Array:
 			c.append(cell)
 	return c
 
+func get_corner_adjacent_sides(coordinates:Vector3i)->Array:
+	var corner:=get_corner_unique_coordinates(coordinates)
+	var sides:=[]
+	for i in range(3):
+		var s:=corner
+		if corner.z==0:
+			match i:
+				0:
+					s=Vector3i(s.x,s.y-1,1)
+				1:
+					s=Vector3i(s.x,s.y,0)
+				2:
+					s=Vector3i(s.x,s.y-1,2)
+		else:
+			match i:
+				0:
+					s=Vector3i(s.x+1,s.y-1,2)
+				1:
+					s=Vector3i(s.x,s.y,1)
+				2:
+					s=Vector3i(s.x,s.y,0)
+		if side_exists(s):
+			sides.append(s)
+	return sides
+
 func get_corner_adjacent_cell_resources(coordinates:Vector3i)->Array:
 	var c:=get_corner_adjacent_cells(coordinates)
 	var r:=[]
@@ -277,8 +302,26 @@ func put_village_game_start(coordinates:Vector3i,color:int)->bool:
 	corner_structures[corner_coordinates.find(coordinates)]=Structure.new(true,Structure.Type.VILLAGE,color)
 	return true
 
-func put_village(coordinates:Vector3i,color:int)->bool:
+func can_put_village(coordinates:Vector3i,color:int)->bool:
+	coordinates=get_corner_unique_coordinates(coordinates)
+	if corner_structures[corner_coordinates.find(coordinates)].exists:
+		return false
+	for c in get_corner_adjacent_corners(coordinates):
+		if corner_structures[corner_coordinates.find(c)].exists:
+			return false
+	var sides:=get_corner_adjacent_sides(coordinates)
+	for side in sides:
+		var structure:Structure=side_structures[side_coordinates.find(side)]
+		if structure.exists and structure.color==color:
+			return true
 	return false
+
+func put_village(coordinates:Vector3i,color:int)->bool:
+	if not can_put_village(coordinates,color):
+		return false
+	coordinates=get_corner_unique_coordinates(coordinates)
+	corner_structures[corner_coordinates.find(coordinates)]=Structure.new(true,Structure.Type.VILLAGE,color)
+	return true
 
 func can_put_road(coordinates:Vector3i,color:int)->bool:
 	coordinates=get_side_unique_coordinates(coordinates)

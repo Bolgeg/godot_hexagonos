@@ -4,12 +4,20 @@ extends Node2D
 @onready var player_status_squares:Control=%PlayerStatusSquares
 @onready var player_status_square_timer:Timer=%PlayerStatusSquareTimer
 @onready var ai_wait_timer:Timer=%AIWaitTimer
+@onready var resource_counter_container:HBoxContainer=%ResourceCounterContainer
+@onready var build_button_container:HBoxContainer=%BuildButtonContainer
 
 enum GameStage{PUT_FIRST_VILLAGE,PUT_SECOND_VILLAGE,MAIN_STAGE}
 var game_stage:=GameStage.PUT_FIRST_VILLAGE
 var game_stage_turn_count:=0
 
 enum ResourceType{WOOD=0,CLAY=1,SHEEP=2,STONE=3,WHEAT=4}
+
+const BUILDING_COSTS:=[
+	[1,1,0,0,0],
+	[1,1,1,0,1],
+	[0,0,0,3,2],
+]
 
 var map:=Map.new()
 
@@ -19,7 +27,7 @@ var active_player:=0
 var ai_waiting:=false
 var turn_start:=true
 
-enum PlayerState{ACTION_SELECTION,NEXT_TURN,PUT_VILLAGE,PUT_ROAD}
+enum PlayerState{ACTION_SELECTION,NEXT_TURN,PUT_VILLAGE,PUT_ROAD,PUT_CITY}
 var player_state:=PlayerState.ACTION_SELECTION
 
 func _ready() -> void:
@@ -29,6 +37,33 @@ func _ready() -> void:
 	active_player=randi_range(0,3)
 	
 	update_player_status_squares()
+	
+	create_build_buttons()
+
+func create_build_buttons():
+	var build_button_scene:=preload("res://scenes/build_button.tscn")
+	var buildings:=[
+		{
+			"index":0,
+			"name":"road",
+			"tooltip":"1 wood, 1 clay",
+		},
+		{
+			"index":1,
+			"name":"village",
+			"tooltip":"1 wood, 1 clay, 1 sheep, 1 wheat",
+		},
+		{
+			"index":2,
+			"name":"city",
+			"tooltip":"3 stone, 2 wheat",
+		},
+	]
+	for building in buildings:
+		var build_button:=build_button_scene.instantiate()
+		build_button.set_values(building.index,building.name,building.tooltip)
+		build_button.pressed.connect(_on_build_button_pressed)
+		build_button_container.add_child(build_button)
 
 func _process(_delta: float) -> void:
 	
@@ -38,6 +73,7 @@ func _process(_delta: float) -> void:
 				player_state=PlayerState.PUT_VILLAGE
 			else:
 				player_state=PlayerState.ACTION_SELECTION
+				generate_resources()
 			turn_start=false
 		
 		if player_state==PlayerState.NEXT_TURN:
@@ -51,7 +87,7 @@ func _process(_delta: float) -> void:
 			execute_ai_turn()
 			next_turn()
 	
-	if player_state==PlayerState.PUT_VILLAGE:
+	if player_state==PlayerState.PUT_VILLAGE or player_state==PlayerState.PUT_CITY:
 		map_node.selection_mode=map_node.SelectionMode.CORNER
 	elif player_state==PlayerState.PUT_ROAD:
 		map_node.selection_mode=map_node.SelectionMode.SIDE
@@ -61,6 +97,7 @@ func _process(_delta: float) -> void:
 	map_node.update(map)
 	
 	update_player_status_squares()
+	update_player_bar()
 
 func _input(_event: InputEvent) -> void:
 	if Input.is_action_just_pressed("left_click") and map_node.selection_active:
@@ -76,6 +113,12 @@ func _input(_event: InputEvent) -> void:
 		elif player_state==PlayerState.PUT_ROAD:
 			if map.put_road(map_node.selection_coordinates,player_colors[0]):
 				return_to_action_selection()
+		elif player_state==PlayerState.PUT_CITY:
+			pass
+
+func update_player_bar():
+	for child in resource_counter_container.get_children():
+		child.update(players[0].resources[child.resource_index])
 
 func return_to_action_selection():
 	if game_stage==GameStage.PUT_FIRST_VILLAGE or game_stage==GameStage.PUT_SECOND_VILLAGE:
@@ -115,6 +158,19 @@ func add_initial_resources_to_player(player:int,village_coordinates:Vector3i):
 	for r in resources:
 		players[player].resources[r]+=1
 
+func generate_resources():
+	var number:=randi_range(1,6)+randi_range(1,6)
+	for cell in map.cell_coordinates:
+		if map.cells[cell.y][cell.x].number==number:
+			var resource:int=map.cells[cell.y][cell.x].resource
+			for i in range(6):
+				var corner:=map.get_corner_unique_coordinates(Vector3i(cell.x,cell.y,i))
+				var structure:Structure=map.corner_structures[map.corner_coordinates.find(corner)]
+				if structure.exists:
+					var player:=player_colors.find(structure.color)
+					var quantity= 2 if structure.type==Structure.Type.CITY else 1
+					players[player].resources[resource]+=quantity
+
 func execute_ai_turn():
 	if game_stage==GameStage.PUT_FIRST_VILLAGE or game_stage==GameStage.PUT_SECOND_VILLAGE:
 		var positions:=[]
@@ -141,4 +197,27 @@ func execute_ai_turn():
 			if map.put_road(road_coordinates,player_colors[active_player]):
 				break
 	else:
-		pass
+		generate_resources()
+		
+		
+
+func _on_end_turn_button_pressed() -> void:
+	if active_player==0 and game_stage==GameStage.MAIN_STAGE:
+		player_state=PlayerState.NEXT_TURN
+
+func _on_build_button_pressed(index:int)->void:
+	if active_player==0 and game_stage==GameStage.MAIN_STAGE:
+		if player_state==PlayerState.ACTION_SELECTION:
+			if players[0].has_resources(BUILDING_COSTS[index]):
+				match index:
+					0:
+						player_state=PlayerState.PUT_ROAD
+					1:
+						player_state=PlayerState.PUT_VILLAGE
+					2:
+						player_state=PlayerState.PUT_CITY
+
+func _on_cancel_button_pressed() -> void:
+	if active_player==0 and game_stage==GameStage.MAIN_STAGE:
+		if player_state!=PlayerState.ACTION_SELECTION:
+			player_state=PlayerState.ACTION_SELECTION
