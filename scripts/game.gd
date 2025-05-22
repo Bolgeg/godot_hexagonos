@@ -6,6 +6,10 @@ extends Node2D
 @onready var ai_wait_timer:Timer=%AIWaitTimer
 @onready var resource_counter_container:HBoxContainer=%ResourceCounterContainer
 @onready var build_button_container:HBoxContainer=%BuildButtonContainer
+@onready var foreground_node_container:CanvasLayer=%ForegroundNodeContainer
+
+const INCREMENT_RESULT_DISTANCE:=72
+const INCREMENT_RESULT_HEIGHT:=64
 
 enum GameStage{PUT_FIRST_VILLAGE,PUT_SECOND_VILLAGE,MAIN_STAGE}
 var game_stage:=GameStage.PUT_FIRST_VILLAGE
@@ -82,6 +86,8 @@ func _process(_delta: float) -> void:
 		if not ai_waiting:
 			ai_wait_timer.start()
 			ai_waiting=true
+			if game_stage==GameStage.MAIN_STAGE:
+				generate_resources()
 		elif ai_wait_timer.is_stopped():
 			ai_waiting=false
 			execute_ai_turn()
@@ -109,12 +115,25 @@ func _input(_event: InputEvent) -> void:
 					return_to_action_selection()
 			else:
 				if map.put_village(map_node.selection_coordinates,player_colors[0]):
+					pay_building(BUILDING_COSTS[1],active_player)
 					return_to_action_selection()
 		elif player_state==PlayerState.PUT_ROAD:
 			if map.put_road(map_node.selection_coordinates,player_colors[0]):
+				if game_stage==GameStage.MAIN_STAGE:
+					pay_building(BUILDING_COSTS[0],active_player)
 				return_to_action_selection()
 		elif player_state==PlayerState.PUT_CITY:
-			pass
+			if map.put_city(map_node.selection_coordinates,player_colors[0]):
+				pay_building(BUILDING_COSTS[2],active_player)
+				return_to_action_selection()
+
+func pay_building(building_costs:Array,player:int):
+	players[player].subtract_resources(building_costs)
+	if player==0:
+		var building_costs_negative:=building_costs.duplicate(true)
+		for i in building_costs_negative.size():
+			building_costs_negative[i]=-building_costs_negative[i]
+		show_resource_increments(building_costs_negative,get_main_player_increment_result_center())
 
 func update_player_bar():
 	for child in resource_counter_container.get_children():
@@ -158,10 +177,40 @@ func add_initial_resources_to_player(player:int,village_coordinates:Vector3i):
 	for r in resources:
 		players[player].resources[r]+=1
 
+func get_main_player_increment_result_center()->Vector2:
+	return resource_counter_container.global_position+Vector2(
+		resource_counter_container.size.x/2,
+		-INCREMENT_RESULT_DISTANCE
+		)
+
+func show_resource_increments(resource_increments:Array,center:Vector2):
+	var new_resources:=[]
+	for j in resource_increments.size():
+		if resource_increments[j]!=0:
+			new_resources.append([j,resource_increments[j]])
+	for j in new_resources.size():
+		var p:=center+Vector2(0,
+			-(new_resources.size()-1)*INCREMENT_RESULT_HEIGHT*0.5
+			+INCREMENT_RESULT_HEIGHT*j
+			)
+		var increment_result:=preload("res://scenes/resource_increment_result.tscn").instantiate()
+		foreground_node_container.add_child(increment_result)
+		increment_result.set_center_position(p)
+		increment_result.set_resource(new_resources[j][0])
+		increment_result.set_quantity(new_resources[j][1])
+
 func generate_resources():
 	var number:=randi_range(1,6)+randi_range(1,6)
+	
+	var player_resource_increments:=[]
+	for i in players.size():
+		player_resource_increments.append([0,0,0,0,0])
+	
 	for cell in map.cell_coordinates:
 		if map.cells[cell.y][cell.x].number==number:
+			
+			map_node.add_cell_highlight(cell)
+			
 			var resource:int=map.cells[cell.y][cell.x].resource
 			for i in range(6):
 				var corner:=map.get_corner_unique_coordinates(Vector3i(cell.x,cell.y,i))
@@ -169,7 +218,32 @@ func generate_resources():
 				if structure.exists:
 					var player:=player_colors.find(structure.color)
 					var quantity= 2 if structure.type==Structure.Type.CITY else 1
+					player_resource_increments[player][resource]+=quantity
 					players[player].resources[resource]+=quantity
+	
+	for i in players.size():
+		var center:=Vector2(0,0)
+		if i==0:
+			center=get_main_player_increment_result_center()
+		else:
+			for child:Control in player_status_squares.get_children():
+				if child.index==i:
+					center=child.global_position+child.size/2
+					var direction:=Vector2.UP
+					match child.index:
+						1:
+							direction=Vector2.RIGHT
+						2:
+							direction=Vector2.DOWN
+						3:
+							direction=Vector2.LEFT
+					center+=direction*(child.size.x/2+INCREMENT_RESULT_DISTANCE)
+					break
+		show_resource_increments(player_resource_increments[i],center)
+	
+	var dice_result:=preload("res://scenes/dice_result.tscn").instantiate()
+	dice_result.set_number(number)
+	foreground_node_container.add_child(dice_result)
 
 func execute_ai_turn():
 	if game_stage==GameStage.PUT_FIRST_VILLAGE or game_stage==GameStage.PUT_SECOND_VILLAGE:
@@ -197,7 +271,7 @@ func execute_ai_turn():
 			if map.put_road(road_coordinates,player_colors[active_player]):
 				break
 	else:
-		generate_resources()
+		pass
 		
 		
 

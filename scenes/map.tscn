@@ -37,3 +37,6 @@ unique_name_in_owner = true
 
 [node name="MapSelectionCursor" parent="." instance=ExtResource("3_gldc4")]
 unique_name_in_owner = true
+
+[node name="ForegroundNodeContainer" type="Node2D" parent="."]
+unique_name_in_owner = true

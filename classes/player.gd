@@ -8,3 +8,7 @@ func has_resources(res:Array)->bool:
 		if resources[i]<res[i]:
 			return false
 	return true
+
+func subtract_resources(res:Array):
+	for i in resources.size():
+		resources[i]-=res[i]

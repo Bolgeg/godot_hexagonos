@@ -343,3 +343,15 @@ func put_road(coordinates:Vector3i,color:int)->bool:
 	coordinates=get_side_unique_coordinates(coordinates)
 	side_structures[side_coordinates.find(coordinates)]=Structure.new(true,Structure.Type.ROAD,color)
 	return true
+
+func can_put_city(coordinates:Vector3i,color:int)->bool:
+	coordinates=get_corner_unique_coordinates(coordinates)
+	var structure:Structure=corner_structures[corner_coordinates.find(coordinates)]
+	return structure.exists and structure.type==Structure.Type.VILLAGE and structure.color==color
+
+func put_city(coordinates:Vector3i,color:int)->bool:
+	if not can_put_city(coordinates,color):
+		return false
+	coordinates=get_corner_unique_coordinates(coordinates)
+	corner_structures[corner_coordinates.find(coordinates)]=Structure.new(true,Structure.Type.CITY,color)
+	return true

@@ -202,5 +202,9 @@ autostart = true
 unique_name_in_owner = true
 one_shot = true
 
+[node name="ForegroundNodeContainer" type="CanvasLayer" parent="."]
+unique_name_in_owner = true
+layer = 2
+
 [connection signal="pressed" from="CanvasLayer/VBoxContainer/PlayerBar/HBoxContainer/CancelButton" to="." method="_on_cancel_button_pressed"]
 [connection signal="pressed" from="CanvasLayer/VBoxContainer/PlayerBar/HBoxContainer/EndTurnButton" to="." method="_on_end_turn_button_pressed"]

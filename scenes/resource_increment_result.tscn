@@ -1,0 +1,47 @@
+[gd_scene load_steps=5 format=3 uid="uid://bfntu847neamx"]
+
+[ext_resource type="Script" uid="uid://byq3lowwboou0" path="res://scripts/resource_increment_result.gd" id="1_3bpp3"]
+[ext_resource type="Texture2D" uid="uid://cvxo3j64x0o11" path="res://assets/resources.png" id="1_kkynv"]
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_ocd2u"]
+bg_color = Color(0.125911, 0.125911, 0.125911, 0.752941)
+corner_radius_top_left = 24
+corner_radius_top_right = 24
+corner_radius_bottom_right = 24
+corner_radius_bottom_left = 24
+
+[sub_resource type="LabelSettings" id="LabelSettings_ocd2u"]
+font_size = 32
+outline_size = 8
+outline_color = Color(0, 0, 0, 1)
+
+[node name="ResourceIncrementResult" type="Node2D"]
+script = ExtResource("1_3bpp3")
+
+[node name="Panel" type="Panel" parent="."]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(128, 48)
+offset_right = 40.0
+offset_bottom = 40.0
+theme_override_styles/panel = SubResource("StyleBoxFlat_ocd2u")
+
+[node name="Label" type="Label" parent="."]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(64, 48)
+offset_right = 40.0
+offset_bottom = 23.0
+text = "+1"
+label_settings = SubResource("LabelSettings_ocd2u")
+horizontal_alignment = 2
+vertical_alignment = 1
+
+[node name="Sprite2D" type="Sprite2D" parent="."]
+unique_name_in_owner = true
+position = Vector2(96, 24)
+texture = ExtResource("1_kkynv")
+region_enabled = true
+region_rect = Rect2(0, 0, 64, 64)
+
+[node name="Timer" type="Timer" parent="."]
+unique_name_in_owner = true
+one_shot = true

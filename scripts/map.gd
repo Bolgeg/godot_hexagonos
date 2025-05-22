@@ -6,6 +6,7 @@ const TILE_SIZE:=64
 @onready var tile_numbers:Node2D=%TileNumbers
 @onready var structures:Node2D=%Structures
 @onready var selection_cursor:Node2D=%MapSelectionCursor
+@onready var foreground_node_container:Node2D=%ForegroundNodeContainer
 
 var map_radius:=2
 
@@ -14,6 +15,11 @@ var selection_mode:=SelectionMode.NONE
 
 var selection_active:=false
 var selection_coordinates:=Vector3i(0,0,0)
+
+func add_cell_highlight(coordinates:Vector2i):
+	var highlight:=preload("res://scenes/cell_highlight.tscn").instantiate()
+	foreground_node_container.add_child(highlight)
+	highlight.set_center_position(get_cell_center(coordinates))
 
 func _ready()->void:
 	center_on_screen()

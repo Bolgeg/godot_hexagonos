@@ -1,0 +1,25 @@
+[gd_scene load_steps=3 format=3 uid="uid://bwgana1eljm2x"]
+
+[ext_resource type="Script" uid="uid://x7l7hidjlqji" path="res://scripts/cell_highlight.gd" id="1_thoei"]
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_ub2ss"]
+resource_local_to_scene = true
+bg_color = Color(1, 1, 1, 0.752941)
+corner_radius_top_left = 37
+corner_radius_top_right = 37
+corner_radius_bottom_right = 37
+corner_radius_bottom_left = 37
+
+[node name="CellHighlight" type="Node2D"]
+script = ExtResource("1_thoei")
+
+[node name="Panel" type="Panel" parent="."]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(74, 74)
+offset_right = 40.0
+offset_bottom = 40.0
+theme_override_styles/panel = SubResource("StyleBoxFlat_ub2ss")
+
+[node name="Timer" type="Timer" parent="."]
+unique_name_in_owner = true
+one_shot = true
