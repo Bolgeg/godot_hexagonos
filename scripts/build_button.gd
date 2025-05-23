@@ -11,6 +11,9 @@ func set_values(building_index_to_set:int,building_name_to_set:String,tooltip_to
 	building_name=building_name_to_set
 	tooltip=tooltip_to_set
 
+func set_state_enabled(enabled:bool):
+	%Button.disabled= not enabled
+
 func _ready() -> void:
 	%Button.text="Build "+building_name
 	%Button.tooltip_text=tooltip

@@ -1,6 +1,10 @@
-[gd_scene load_steps=5 format=3 uid="uid://b3th4ahebplcw"]
+[gd_scene load_steps=6 format=3 uid="uid://b3th4ahebplcw"]
 
 [ext_resource type="Script" uid="uid://b2vdlds4xcqc3" path="res://scripts/build_button.gd" id="1_720va"]
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_dxb1y"]
+resource_local_to_scene = true
+bg_color = Color(0.377919, 0.377919, 0.377919, 1)
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_5gcc0"]
 resource_local_to_scene = true
@@ -33,6 +37,7 @@ grow_horizontal = 2
 grow_vertical = 2
 focus_mode = 0
 theme_override_font_sizes/font_size = 24
+theme_override_styles/disabled = SubResource("StyleBoxFlat_dxb1y")
 theme_override_styles/hover = SubResource("StyleBoxFlat_5gcc0")
 theme_override_styles/pressed = SubResource("StyleBoxFlat_720va")
 theme_override_styles/normal = SubResource("StyleBoxFlat_u8ojb")

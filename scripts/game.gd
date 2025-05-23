@@ -69,6 +69,16 @@ func create_build_buttons():
 		build_button.pressed.connect(_on_build_button_pressed)
 		build_button_container.add_child(build_button)
 
+func update_build_buttons():
+	for button in build_button_container.get_children():
+		var index=button.building_index
+		var enabled:=false
+		if active_player==0 and game_stage==GameStage.MAIN_STAGE:
+			if player_state==PlayerState.ACTION_SELECTION:
+				if players[0].has_resources(BUILDING_COSTS[index]):
+					enabled=true
+		button.set_state_enabled(enabled)
+
 func _process(_delta: float) -> void:
 	
 	if active_player==0:
@@ -138,6 +148,7 @@ func pay_building(building_costs:Array,player:int):
 func update_player_bar():
 	for child in resource_counter_container.get_children():
 		child.update(players[0].resources[child.resource_index])
+	update_build_buttons()
 
 func return_to_action_selection():
 	if game_stage==GameStage.PUT_FIRST_VILLAGE or game_stage==GameStage.PUT_SECOND_VILLAGE:
