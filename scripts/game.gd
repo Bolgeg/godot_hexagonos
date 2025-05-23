@@ -7,9 +7,13 @@ extends Node2D
 @onready var resource_counter_container:HBoxContainer=%ResourceCounterContainer
 @onready var build_button_container:HBoxContainer=%BuildButtonContainer
 @onready var foreground_node_container:CanvasLayer=%ForegroundNodeContainer
+@onready var trade_menu:Control=%TradeMenu
+@onready var trade_button:Button=%TradeButton
 
 const INCREMENT_RESULT_DISTANCE:=72
 const INCREMENT_RESULT_HEIGHT:=64
+
+const INPUT_RESOURCE_QUANTITY_TO_TRADE:=4
 
 enum GameStage{PUT_FIRST_VILLAGE,PUT_SECOND_VILLAGE,MAIN_STAGE}
 var game_stage:=GameStage.PUT_FIRST_VILLAGE
@@ -31,7 +35,7 @@ var active_player:=0
 var ai_waiting:=false
 var turn_start:=true
 
-enum PlayerState{ACTION_SELECTION,NEXT_TURN,PUT_VILLAGE,PUT_ROAD,PUT_CITY}
+enum PlayerState{ACTION_SELECTION,NEXT_TURN,PUT_VILLAGE,PUT_ROAD,PUT_CITY,TRADE}
 var player_state:=PlayerState.ACTION_SELECTION
 
 func _ready() -> void:
@@ -114,6 +118,38 @@ func _process(_delta: float) -> void:
 	
 	update_player_status_squares()
 	update_player_bar()
+	if active_player==0 and player_state==PlayerState.TRADE:
+		trade_menu.visible=true
+		update_trade()
+	else:
+		trade_menu.visible=false
+
+func player_can_trade(input_resource:int,output_resource:int,player:int)->bool:
+	if output_resource!=input_resource:
+		if players[player].resources[input_resource]>=INPUT_RESOURCE_QUANTITY_TO_TRADE:
+			return true
+	return false
+
+func player_trade(input_resource:int,output_resource:int,player:int):
+	if player_can_trade(input_resource,output_resource,player):
+		players[player].resources[input_resource]-=INPUT_RESOURCE_QUANTITY_TO_TRADE
+		players[player].resources[output_resource]+=1
+		if player==0:
+			var res:=[0,0,0,0,0]
+			res[input_resource]-=INPUT_RESOURCE_QUANTITY_TO_TRADE
+			res[output_resource]+=1
+			show_resource_increments(res,get_main_player_increment_result_center())
+
+func update_trade():
+	trade_menu.set_bottom_center_position(
+		trade_button.global_position+Vector2(trade_button.size.x*0.5,0)
+		)
+	var enable:=[]
+	for i in range(5):
+		enable.append([])
+		for j in range(5):
+			enable[i].append(player_can_trade(j,i,0))
+	trade_menu.set_resource_buttons_enabled(enable)
 
 func _input(_event: InputEvent) -> void:
 	if Input.is_action_just_pressed("left_click") and map_node.selection_active:
@@ -306,3 +342,16 @@ func _on_cancel_button_pressed() -> void:
 	if active_player==0 and game_stage==GameStage.MAIN_STAGE:
 		if player_state!=PlayerState.ACTION_SELECTION:
 			player_state=PlayerState.ACTION_SELECTION
+
+func _on_trade_button_pressed() -> void:
+	if active_player==0 and game_stage==GameStage.MAIN_STAGE:
+		if player_state==PlayerState.ACTION_SELECTION:
+			player_state=PlayerState.TRADE
+		elif player_state==PlayerState.TRADE:
+			player_state=PlayerState.ACTION_SELECTION
+
+func _on_trade_menu_resource_button_pressed(output_resource_index: int, input_resource_index: int) -> void:
+	if active_player==0 and game_stage==GameStage.MAIN_STAGE:
+		if player_state==PlayerState.TRADE:
+			if player_can_trade(input_resource_index,output_resource_index,0):
+				player_trade(input_resource_index,output_resource_index,0)

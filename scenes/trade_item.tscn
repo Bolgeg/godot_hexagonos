@@ -1,0 +1,52 @@
+[gd_scene load_steps=7 format=3 uid="uid://bkmpnqkpaxdvn"]
+
+[ext_resource type="PackedScene" uid="uid://dgk06c7pmuqfu" path="res://scenes/resource_selector.tscn" id="1_qgn0r"]
+[ext_resource type="Script" uid="uid://dpkc74oc5rs7y" path="res://scripts/trade_item.gd" id="1_vcbq2"]
+[ext_resource type="PackedScene" uid="uid://6t2fv06k5n87" path="res://scenes/resource_button.tscn" id="2_yd44j"]
+[ext_resource type="Texture2D" uid="uid://cvxo3j64x0o11" path="res://assets/resources.png" id="3_vcbq2"]
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_vcbq2"]
+bg_color = Color(0.25098, 0.25098, 0.25098, 1)
+corner_radius_top_left = 16
+corner_radius_top_right = 16
+corner_radius_bottom_right = 16
+corner_radius_bottom_left = 16
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_nvp23"]
+resource_local_to_scene = true
+atlas = ExtResource("3_vcbq2")
+region = Rect2(0, 0, 64, 64)
+
+[node name="TradeItem" type="PanelContainer"]
+offset_right = 115.0
+offset_bottom = 64.0
+theme_override_styles/panel = SubResource("StyleBoxFlat_vcbq2")
+script = ExtResource("1_vcbq2")
+
+[node name="MarginContainer" type="MarginContainer" parent="."]
+layout_mode = 2
+theme_override_constants/margin_left = 8
+theme_override_constants/margin_top = 8
+theme_override_constants/margin_right = 8
+theme_override_constants/margin_bottom = 8
+
+[node name="HBoxContainer" type="HBoxContainer" parent="MarginContainer"]
+layout_mode = 2
+theme_override_constants/separation = 8
+alignment = 1
+
+[node name="ResourceSelector" parent="MarginContainer/HBoxContainer" instance=ExtResource("1_qgn0r")]
+unique_name_in_owner = true
+layout_mode = 2
+selected = -1
+
+[node name="Label" type="Label" parent="MarginContainer/HBoxContainer"]
+layout_mode = 2
+text = "=>"
+
+[node name="ResourceButton" parent="MarginContainer/HBoxContainer" instance=ExtResource("2_yd44j")]
+unique_name_in_owner = true
+layout_mode = 2
+icon = SubResource("AtlasTexture_nvp23")
+
+[connection signal="pressed" from="MarginContainer/HBoxContainer/ResourceButton" to="." method="_on_resource_button_pressed"]

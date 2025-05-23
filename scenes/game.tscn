@@ -1,9 +1,10 @@
-[gd_scene load_steps=9 format=3 uid="uid://be61xbsfj8swf"]
+[gd_scene load_steps=10 format=3 uid="uid://be61xbsfj8swf"]
 
 [ext_resource type="PackedScene" uid="uid://hh71tmrjwd4h" path="res://scenes/map.tscn" id="1_uwrxv"]
 [ext_resource type="Script" uid="uid://bmprpaalyu8wt" path="res://scripts/game.gd" id="1_yqjtg"]
 [ext_resource type="PackedScene" uid="uid://cq7k8q310n3a0" path="res://scenes/player_status_square.tscn" id="3_lnu2h"]
 [ext_resource type="PackedScene" uid="uid://bndfna3bxudus" path="res://scenes/resource_counter.tscn" id="4_lbhrr"]
+[ext_resource type="PackedScene" uid="uid://bmkwllecakw42" path="res://scenes/trade_menu.tscn" id="5_iywne"]
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_lnu2h"]
 bg_color = Color(0.783523, 0.783523, 0.783523, 1)
@@ -155,6 +156,7 @@ layout_mode = 2
 resource_index = 4
 
 [node name="TradeButton" type="Button" parent="CanvasLayer/VBoxContainer/PlayerBar/HBoxContainer"]
+unique_name_in_owner = true
 layout_mode = 2
 size_flags_horizontal = 3
 size_flags_stretch_ratio = 0.1
@@ -194,6 +196,9 @@ theme_override_styles/pressed = SubResource("StyleBoxFlat_iywne")
 theme_override_styles/normal = SubResource("StyleBoxFlat_p57ef")
 text = "End turn"
 
+[node name="TradeMenu" parent="CanvasLayer" instance=ExtResource("5_iywne")]
+unique_name_in_owner = true
+
 [node name="PlayerStatusSquareTimer" type="Timer" parent="."]
 unique_name_in_owner = true
 autostart = true
@@ -206,5 +211,7 @@ one_shot = true
 unique_name_in_owner = true
 layer = 2
 
+[connection signal="pressed" from="CanvasLayer/VBoxContainer/PlayerBar/HBoxContainer/TradeButton" to="." method="_on_trade_button_pressed"]
 [connection signal="pressed" from="CanvasLayer/VBoxContainer/PlayerBar/HBoxContainer/CancelButton" to="." method="_on_cancel_button_pressed"]
 [connection signal="pressed" from="CanvasLayer/VBoxContainer/PlayerBar/HBoxContainer/EndTurnButton" to="." method="_on_end_turn_button_pressed"]
+[connection signal="resource_button_pressed" from="CanvasLayer/TradeMenu" to="." method="_on_trade_menu_resource_button_pressed"]

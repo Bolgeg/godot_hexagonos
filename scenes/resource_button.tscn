@@ -1,0 +1,47 @@
+[gd_scene load_steps=8 format=3 uid="uid://6t2fv06k5n87"]
+
+[ext_resource type="Texture2D" uid="uid://cvxo3j64x0o11" path="res://assets/resources.png" id="1_kti71"]
+[ext_resource type="Script" uid="uid://dqnii8cg184ij" path="res://scripts/resource_button.gd" id="2_gfmnb"]
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_inunj"]
+bg_color = Color(0.377919, 0.377919, 0.377919, 1)
+corner_radius_top_left = 16
+corner_radius_top_right = 16
+corner_radius_bottom_right = 16
+corner_radius_bottom_left = 16
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_t0xo8"]
+bg_color = Color(0.716296, 0.716296, 0.716296, 1)
+corner_radius_top_left = 16
+corner_radius_top_right = 16
+corner_radius_bottom_right = 16
+corner_radius_bottom_left = 16
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_kti71"]
+bg_color = Color(0.47788, 0.47788, 0.47788, 1)
+corner_radius_top_left = 16
+corner_radius_top_right = 16
+corner_radius_bottom_right = 16
+corner_radius_bottom_left = 16
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_gfmnb"]
+corner_radius_top_left = 16
+corner_radius_top_right = 16
+corner_radius_bottom_right = 16
+corner_radius_bottom_left = 16
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_gfmnb"]
+resource_local_to_scene = true
+atlas = ExtResource("1_kti71")
+region = Rect2(0, 0, 64, 64)
+
+[node name="ResourceButton" type="Button"]
+offset_right = 8.0
+offset_bottom = 8.0
+focus_mode = 0
+theme_override_styles/disabled = SubResource("StyleBoxFlat_inunj")
+theme_override_styles/hover = SubResource("StyleBoxFlat_t0xo8")
+theme_override_styles/pressed = SubResource("StyleBoxFlat_kti71")
+theme_override_styles/normal = SubResource("StyleBoxFlat_gfmnb")
+icon = SubResource("AtlasTexture_gfmnb")
+script = ExtResource("2_gfmnb")

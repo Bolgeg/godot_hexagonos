@@ -1,0 +1,34 @@
+[gd_scene load_steps=5 format=3 uid="uid://dgk06c7pmuqfu"]
+
+[ext_resource type="Script" uid="uid://dxawa12otnm1j" path="res://scripts/resource_selector.gd" id="1_n5q5h"]
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_n5q5h"]
+bg_color = Color(0.716296, 0.716296, 0.716296, 1)
+corner_radius_top_left = 16
+corner_radius_top_right = 16
+corner_radius_bottom_right = 16
+corner_radius_bottom_left = 16
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_pf31f"]
+bg_color = Color(0.47788, 0.47788, 0.47788, 1)
+corner_radius_top_left = 16
+corner_radius_top_right = 16
+corner_radius_bottom_right = 16
+corner_radius_bottom_left = 16
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_5cd76"]
+corner_radius_top_left = 16
+corner_radius_top_right = 16
+corner_radius_bottom_right = 16
+corner_radius_bottom_left = 16
+
+[node name="ResourceSelector" type="OptionButton"]
+offset_right = 32.0
+offset_bottom = 20.0
+focus_mode = 0
+theme_override_font_sizes/font_size = 32
+theme_override_styles/hover = SubResource("StyleBoxFlat_n5q5h")
+theme_override_styles/pressed = SubResource("StyleBoxFlat_pf31f")
+theme_override_styles/normal = SubResource("StyleBoxFlat_5cd76")
+selected = 0
+script = ExtResource("1_n5q5h")
