@@ -1,5 +1,8 @@
 extends Node2D
 
+signal won
+signal lost
+
 @onready var map_node:Node2D=%Map
 @onready var player_status_squares:Control=%PlayerStatusSquares
 @onready var player_status_square_timer:Timer=%PlayerStatusSquareTimer
@@ -201,6 +204,15 @@ func update_player_status_squares():
 		var t=1-player_status_square_timer.time_left/player_status_square_timer.wait_time
 		square.set_state(player_colors[index],active_player==index,t)
 
+func get_player_points(player:int)->int:
+	return map.get_color_points(player_colors[player])
+
+func get_winner()->int:
+	for i in players.size():
+		if get_player_points(i)>=10:
+			return i
+	return -1
+
 func next_turn():
 	game_stage_turn_count+=1
 	if game_stage==GameStage.PUT_FIRST_VILLAGE:
@@ -218,6 +230,13 @@ func next_turn():
 	else:
 		active_player=(active_player+1)%4
 	turn_start=true
+	
+	var winner:=get_winner()
+	if winner!=-1:
+		if winner==0:
+			won.emit()
+		else:
+			lost.emit()
 
 func add_initial_resources_to_player(player:int,village_coordinates:Vector3i):
 	var resources:=map.get_corner_adjacent_cell_resources(village_coordinates)
@@ -292,11 +311,56 @@ func generate_resources():
 	dice_result.set_number(number)
 	foreground_node_container.add_child(dice_result)
 
+func has_resources(resources:Array,cost:Array):
+	for i in resources.size():
+		if resources[i]<cost[i]:
+			return false
+	return true
+
+func subtract(a:Array,b:Array)->Array:
+	var c:=a.duplicate(true)
+	for i in a.size():
+		c[i]-=b[i]
+	return c
+
+func plan_trade_conversion(resources:Array,target_resources:Array)->int:
+	var candidates:=[]
+	for i in resources.size():
+		if resources[i]>=target_resources[i]+INPUT_RESOURCE_QUANTITY_TO_TRADE:
+			candidates.append([i,resources[i]-target_resources[i]])
+	candidates.sort_custom(func(a,b):return a[1]>b[1])
+	if candidates.size()==0:
+		return -1
+	else:
+		return candidates[0][0]
+
+func cost_to_build(player:int,building:int)->int:
+	var resources:Array=players[player].resources.duplicate(true)
+	var building_cost:Array=BUILDING_COSTS[building].duplicate(true)
+	
+	while true:
+		if has_resources(resources,building_cost):
+			resources=subtract(resources,building_cost)
+			break
+		var conversion:=plan_trade_conversion(resources,building_cost)
+		if conversion==-1:
+			return -1
+		resources[conversion]-=INPUT_RESOURCE_QUANTITY_TO_TRADE
+		for i in resources.size():
+			if resources[i]<building_cost[i]:
+				resources[i]+=1
+				break
+	
+	var sum:=0
+	for i in resources.size():
+		sum+=players[player].resources[i]-resources[i]
+	return sum
+
 func execute_ai_turn():
 	if game_stage==GameStage.PUT_FIRST_VILLAGE or game_stage==GameStage.PUT_SECOND_VILLAGE:
 		var positions:=[]
 		for c in map.corner_coordinates:
-			positions.append([c,map.get_village_position_score(c)])
+			positions.append([c,map.get_village_position_score(c,player_colors[active_player],true)])
 		positions.sort_custom(func(a,b):return a[1]>b[1])
 		
 		var village_coordinates:=Vector3i(0,0,0)
@@ -318,9 +382,81 @@ func execute_ai_turn():
 			if map.put_road(road_coordinates,player_colors[active_player]):
 				break
 	else:
-		pass
-		
-		
+		while true:
+			var corner_positions:=[]
+			for c in map.corner_coordinates:
+				corner_positions.append([c,map.get_village_position_score(
+					c,
+					player_colors[active_player],
+					false
+					)])
+			corner_positions.sort_custom(func(a,b):return a[1]>b[1])
+			
+			var village_positions:=[]
+			for p in corner_positions:
+				if map.can_put_village(p[0],player_colors[active_player]):
+					village_positions.append(p.duplicate(true))
+			
+			var city_positions:=[]
+			for p in corner_positions:
+				if map.can_put_city(p[0],player_colors[active_player]):
+					city_positions.append(p.duplicate(true))
+			
+			var side_positions:=[]
+			for c in map.side_coordinates:
+				side_positions.append([c,map.get_road_position_score(c,player_colors[active_player])])
+			side_positions.sort_custom(func(a,b):return a[1]>b[1])
+			
+			var road_positions:=[]
+			for p in side_positions:
+				if map.can_put_road(p[0],player_colors[active_player]):
+					road_positions.append(p.duplicate(true))
+			
+			var build_options:=[]
+			if road_positions.size()>0:
+				build_options.append([road_positions[0][0],road_positions[0][1],0])
+			if village_positions.size()>0:
+				build_options.append([village_positions[0][0],village_positions[0][1],1])
+			if city_positions.size()>0:
+				build_options.append([city_positions[0][0],city_positions[0][1],2])
+			
+			var build_options_b:=[]
+			for i in build_options.size():
+				var cost:=cost_to_build(active_player,build_options[i][2])
+				if cost>0:
+					build_options[i][1]=build_options[i][1]/cost
+				if cost!=-1:
+					build_options_b.append(build_options[i].duplicate(true))
+			build_options=build_options_b.duplicate(true)
+			
+			build_options.sort_custom(func(a,b):return a[1]>b[1])
+			
+			if build_options.size()==0:
+				break
+			
+			var building:int=build_options[0][2]
+			while not players[active_player].has_resources(BUILDING_COSTS[building]):
+				var resource_to_trade=plan_trade_conversion(
+					players[active_player].resources,
+					BUILDING_COSTS[building]
+					)
+				var resource_to_get:=0
+				for i in players[active_player].resources.size():
+					if players[active_player].resources[i]<BUILDING_COSTS[building][i]:
+						resource_to_get=i
+						break
+				player_trade(resource_to_trade,resource_to_get,active_player)
+			
+			pay_building(BUILDING_COSTS[building],active_player)
+			
+			var coordinates:Vector3i=build_options[0][0]
+			match building:
+				0:
+					map.put_road(coordinates,player_colors[active_player])
+				1:
+					map.put_village(coordinates,player_colors[active_player])
+				2:
+					map.put_city(coordinates,player_colors[active_player])
 
 func _on_end_turn_button_pressed() -> void:
 	if active_player==0 and game_stage==GameStage.MAIN_STAGE:

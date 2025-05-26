@@ -1,0 +1,275 @@
+[gd_scene load_steps=24 format=3 uid="uid://ds4wdcxxvncgk"]
+
+[ext_resource type="Script" uid="uid://b7t1gnd1py6jo" path="res://scripts/full_game.gd" id="1_k4mkr"]
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_8vysi"]
+bg_color = Color(0.501961, 0.501961, 0.501961, 1)
+
+[sub_resource type="LabelSettings" id="LabelSettings_537tr"]
+font_size = 32
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_mgjqe"]
+bg_color = Color(0.717647, 0.717647, 0.717647, 1)
+corner_radius_top_left = 16
+corner_radius_top_right = 16
+corner_radius_bottom_right = 16
+corner_radius_bottom_left = 16
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_4j4pa"]
+bg_color = Color(0.478431, 0.478431, 0.478431, 1)
+corner_radius_top_left = 16
+corner_radius_top_right = 16
+corner_radius_bottom_right = 16
+corner_radius_bottom_left = 16
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_cv7ml"]
+corner_radius_top_left = 16
+corner_radius_top_right = 16
+corner_radius_bottom_right = 16
+corner_radius_bottom_left = 16
+
+[sub_resource type="Gradient" id="Gradient_k4mkr"]
+offsets = PackedFloat32Array(0, 0)
+colors = PackedColorArray(1, 1, 1, 1, 1, 1, 1, 1)
+
+[sub_resource type="GradientTexture2D" id="GradientTexture2D_0mt7r"]
+gradient = SubResource("Gradient_k4mkr")
+
+[sub_resource type="Gradient" id="Gradient_0mt7r"]
+colors = PackedColorArray(1, 0, 0, 1, 1, 0, 0, 1)
+
+[sub_resource type="GradientTexture2D" id="GradientTexture2D_537tr"]
+gradient = SubResource("Gradient_0mt7r")
+
+[sub_resource type="Gradient" id="Gradient_537tr"]
+colors = PackedColorArray(1, 0.501961, 0, 1, 1, 0.501961, 0, 1)
+
+[sub_resource type="GradientTexture2D" id="GradientTexture2D_n8mwf"]
+gradient = SubResource("Gradient_537tr")
+
+[sub_resource type="Gradient" id="Gradient_n8mwf"]
+colors = PackedColorArray(0, 0, 1, 1, 0, 0, 1, 1)
+
+[sub_resource type="GradientTexture2D" id="GradientTexture2D_8vysi"]
+gradient = SubResource("Gradient_n8mwf")
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_iedyj"]
+bg_color = Color(0.717647, 0.717647, 0.717647, 1)
+corner_radius_top_left = 16
+corner_radius_top_right = 16
+corner_radius_bottom_right = 16
+corner_radius_bottom_left = 16
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_oax2g"]
+bg_color = Color(0.478431, 0.478431, 0.478431, 1)
+corner_radius_top_left = 16
+corner_radius_top_right = 16
+corner_radius_bottom_right = 16
+corner_radius_bottom_left = 16
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_mcv4l"]
+corner_radius_top_left = 16
+corner_radius_top_right = 16
+corner_radius_bottom_right = 16
+corner_radius_bottom_left = 16
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_k4mkr"]
+bg_color = Color(1, 1, 1, 0.25098)
+corner_radius_top_left = 16
+corner_radius_top_right = 16
+corner_radius_bottom_right = 16
+corner_radius_bottom_left = 16
+
+[sub_resource type="LabelSettings" id="LabelSettings_k4mkr"]
+font_size = 64
+outline_size = 8
+outline_color = Color(0, 0, 0, 1)
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_537tr"]
+bg_color = Color(0.717647, 0.717647, 0.717647, 1)
+corner_radius_top_left = 16
+corner_radius_top_right = 16
+corner_radius_bottom_right = 16
+corner_radius_bottom_left = 16
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_n8mwf"]
+bg_color = Color(0.478431, 0.478431, 0.478431, 1)
+corner_radius_top_left = 16
+corner_radius_top_right = 16
+corner_radius_bottom_right = 16
+corner_radius_bottom_left = 16
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_0mt7r"]
+corner_radius_top_left = 16
+corner_radius_top_right = 16
+corner_radius_bottom_right = 16
+corner_radius_bottom_left = 16
+
+[sub_resource type="LabelSettings" id="LabelSettings_0mt7r"]
+font_size = 64
+font_color = Color(1, 0, 0, 1)
+outline_size = 8
+outline_color = Color(0, 0, 0, 1)
+
+[node name="FullGame" type="Node2D"]
+script = ExtResource("1_k4mkr")
+
+[node name="GameContainer" type="Node2D" parent="."]
+unique_name_in_owner = true
+
+[node name="CanvasLayer" type="CanvasLayer" parent="."]
+layer = 3
+
+[node name="StartGameContainer" type="Control" parent="CanvasLayer"]
+unique_name_in_owner = true
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="Background" type="Panel" parent="CanvasLayer/StartGameContainer"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_styles/panel = SubResource("StyleBoxFlat_8vysi")
+
+[node name="VBoxContainer" type="VBoxContainer" parent="CanvasLayer/StartGameContainer"]
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -20.0
+offset_top = -20.0
+offset_right = 20.0
+offset_bottom = 20.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_constants/separation = 16
+
+[node name="Label" type="Label" parent="CanvasLayer/StartGameContainer/VBoxContainer"]
+layout_mode = 2
+text = "Select color:"
+label_settings = SubResource("LabelSettings_537tr")
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="ColorOptionButton" type="OptionButton" parent="CanvasLayer/StartGameContainer/VBoxContainer"]
+unique_name_in_owner = true
+layout_mode = 2
+focus_mode = 0
+theme_override_font_sizes/font_size = 32
+theme_override_styles/hover = SubResource("StyleBoxFlat_mgjqe")
+theme_override_styles/pressed = SubResource("StyleBoxFlat_4j4pa")
+theme_override_styles/normal = SubResource("StyleBoxFlat_cv7ml")
+selected = 0
+item_count = 4
+popup/item_0/icon = SubResource("GradientTexture2D_0mt7r")
+popup/item_0/id = 0
+popup/item_1/icon = SubResource("GradientTexture2D_537tr")
+popup/item_1/id = 1
+popup/item_2/icon = SubResource("GradientTexture2D_n8mwf")
+popup/item_2/id = 2
+popup/item_3/icon = SubResource("GradientTexture2D_8vysi")
+popup/item_3/id = 3
+
+[node name="StartGameButton" type="Button" parent="CanvasLayer/StartGameContainer/VBoxContainer"]
+layout_mode = 2
+focus_mode = 0
+theme_override_font_sizes/font_size = 32
+theme_override_styles/hover = SubResource("StyleBoxFlat_iedyj")
+theme_override_styles/pressed = SubResource("StyleBoxFlat_oax2g")
+theme_override_styles/normal = SubResource("StyleBoxFlat_mcv4l")
+text = "Start game"
+
+[node name="WonMessageContainer" type="PanelContainer" parent="CanvasLayer"]
+unique_name_in_owner = true
+visible = false
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -20.0
+offset_top = -20.0
+offset_right = 20.0
+offset_bottom = 20.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_styles/panel = SubResource("StyleBoxFlat_k4mkr")
+
+[node name="MarginContainer" type="MarginContainer" parent="CanvasLayer/WonMessageContainer"]
+layout_mode = 2
+theme_override_constants/margin_left = 16
+theme_override_constants/margin_top = 16
+theme_override_constants/margin_right = 16
+theme_override_constants/margin_bottom = 16
+
+[node name="VBoxContainer" type="VBoxContainer" parent="CanvasLayer/WonMessageContainer/MarginContainer"]
+layout_mode = 2
+theme_override_constants/separation = 16
+
+[node name="Label" type="Label" parent="CanvasLayer/WonMessageContainer/MarginContainer/VBoxContainer"]
+layout_mode = 2
+text = "YOU WIN!"
+label_settings = SubResource("LabelSettings_k4mkr")
+
+[node name="WonPlayAgainButton" type="Button" parent="CanvasLayer/WonMessageContainer/MarginContainer/VBoxContainer"]
+layout_mode = 2
+focus_mode = 0
+theme_override_font_sizes/font_size = 32
+theme_override_styles/hover = SubResource("StyleBoxFlat_537tr")
+theme_override_styles/pressed = SubResource("StyleBoxFlat_n8mwf")
+theme_override_styles/normal = SubResource("StyleBoxFlat_0mt7r")
+text = "Play again"
+
+[node name="LostMessageContainer" type="PanelContainer" parent="CanvasLayer"]
+unique_name_in_owner = true
+visible = false
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -20.0
+offset_top = -20.0
+offset_right = 20.0
+offset_bottom = 20.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_styles/panel = SubResource("StyleBoxFlat_k4mkr")
+
+[node name="MarginContainer" type="MarginContainer" parent="CanvasLayer/LostMessageContainer"]
+layout_mode = 2
+theme_override_constants/margin_left = 16
+theme_override_constants/margin_top = 16
+theme_override_constants/margin_right = 16
+theme_override_constants/margin_bottom = 16
+
+[node name="VBoxContainer" type="VBoxContainer" parent="CanvasLayer/LostMessageContainer/MarginContainer"]
+layout_mode = 2
+theme_override_constants/separation = 16
+
+[node name="Label" type="Label" parent="CanvasLayer/LostMessageContainer/MarginContainer/VBoxContainer"]
+layout_mode = 2
+text = "YOU LOST"
+label_settings = SubResource("LabelSettings_0mt7r")
+
+[node name="LostPlayAgainButton" type="Button" parent="CanvasLayer/LostMessageContainer/MarginContainer/VBoxContainer"]
+layout_mode = 2
+focus_mode = 0
+theme_override_font_sizes/font_size = 32
+theme_override_styles/hover = SubResource("StyleBoxFlat_537tr")
+theme_override_styles/pressed = SubResource("StyleBoxFlat_n8mwf")
+theme_override_styles/normal = SubResource("StyleBoxFlat_0mt7r")
+text = "Play again"
+
+[connection signal="pressed" from="CanvasLayer/StartGameContainer/VBoxContainer/StartGameButton" to="." method="_on_start_game_button_pressed"]
+[connection signal="pressed" from="CanvasLayer/WonMessageContainer/MarginContainer/VBoxContainer/WonPlayAgainButton" to="." method="_on_won_play_again_button_pressed"]
+[connection signal="pressed" from="CanvasLayer/LostMessageContainer/MarginContainer/VBoxContainer/LostPlayAgainButton" to="." method="_on_lost_play_again_button_pressed"]

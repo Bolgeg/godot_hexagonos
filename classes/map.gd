@@ -247,11 +247,20 @@ func get_number_probability(number:int)->float:
 		return 0.0
 	return float(6-abs(number-7))/36
 
-func get_village_position_score(coordinates:Vector3i)->float:
+func get_village_position_score(coordinates:Vector3i,color:int,exclude_village:bool)->float:
 	var score:=0.0
 	var c:=get_corner_adjacent_cells(coordinates)
 	for cell in c:
 		score+=get_number_probability(cells[cell.y][cell.x].number)
+	
+	coordinates=get_corner_unique_coordinates(coordinates)
+	var structure:Structure=corner_structures[corner_coordinates.find(coordinates)]
+	if structure.exists:
+		if exclude_village:
+			score=0
+		elif structure.color!=color:
+			score=0
+	
 	return score
 
 func get_road_position_score(coordinates:Vector3i,color:int)->float:
@@ -276,13 +285,13 @@ func get_road_position_score(coordinates:Vector3i,color:int)->float:
 			if corner_structures[corner_coordinates.find(c)].exists:
 				continue
 			if are_adjacent_corners_free(c):
-				score+=get_village_position_score(c)
+				score+=get_village_position_score(c,color,true)/8
 	else:
 		for c in corners:
 			if corner_structures[corner_coordinates.find(c)].exists:
 				continue
 			if are_adjacent_corners_free(c):
-				score+=get_village_position_score(c)*2
+				score+=get_village_position_score(c,color,true)/8
 	
 	return score
 
@@ -355,3 +364,14 @@ func put_city(coordinates:Vector3i,color:int)->bool:
 	coordinates=get_corner_unique_coordinates(coordinates)
 	corner_structures[corner_coordinates.find(coordinates)]=Structure.new(true,Structure.Type.CITY,color)
 	return true
+
+func get_color_points(color:int)->int:
+	var points:=0
+	for i in corner_coordinates.size():
+		var structure:Structure=corner_structures[i]
+		if structure.exists and structure.color==color:
+			if structure.type==Structure.Type.CITY:
+				points+=2
+			else:
+				points+=1
+	return points
